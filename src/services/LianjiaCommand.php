@@ -2,13 +2,9 @@
 
 namespace app\services;
 
-use app\library\Log;
-use app\library\Util;
 use Yii;
-use app\library\Api;
 use app\library\Service;
-use yii\base\Exception;
-use yii\db\Connection;
+use Symfony\Component\DomCrawler\Crawler;
 
 class LianjiaCommand extends Service {
 	
@@ -75,7 +71,22 @@ class LianjiaCommand extends Service {
 		
 		foreach($this->_request_urls as $url) {
 			$html = $this->_downloadPage($url);
-			$this->_saveList($html);
+			
+			$crawler = new Crawler($html);
+			
+			$crawler->filter('ul.sellListContent > li')->each(function(Crawler $node, $i) {
+				$this->_saveList([
+					'url'        => $node->filter('a.img')->attr('href'),
+					'title'      => $node->filter('div.title')->text(),
+					'address'    => $node->filter('div.address')->text(),
+					'flood'      => $node->filter('div.flood')->text(),
+					'tag'        => $node->filter('div.tag')->text(),
+					'price_info' => $node->filter('div.priceInfo')->text(),
+					'price'      => (int)$node->filter('div.priceInfo')->text(),
+				]);
+			});
+			exit;
+			
 		}
 	}
 	
@@ -85,7 +96,7 @@ class LianjiaCommand extends Service {
 		$retry  = 5;
 		$result = '';
 		while($retry-- > 0) {
-			$res    = $client->request('GET', $url);
+			$res = $client->request('GET', $url);
 			if(200 == $res->getStatusCode()) {
 				$result = $res->getBody();
 				break;
@@ -95,11 +106,11 @@ class LianjiaCommand extends Service {
 		return (string)$result;
 	}
 	
-	private function _saveList($html){
+	private function _saveList($data) {
 		
-		Yii::$app->db->createCommand()->insert('post_list_data', [
-			'datetime' => $this->_datetime,
-			'html' => $html,
-		])->execute();
+		$data = array_merge([
+			'datetime' => $this->_datetime
+		], $data);
+		Yii::$app->db->createCommand()->insert('post_list_data', $data)->execute();
 	}
 }

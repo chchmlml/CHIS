@@ -38,7 +38,7 @@ $config = [
             ],
         ],
     ],
-    'defaultRoute' => 'tag/index',
+    'defaultRoute' => 'post/index',
     'params' => $params,
 ];
 return $config;
