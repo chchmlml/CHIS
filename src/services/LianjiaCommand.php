@@ -5,6 +5,7 @@ namespace app\services;
 use Yii;
 use app\library\Service;
 use Symfony\Component\DomCrawler\Crawler;
+use yii\base\Exception;
 
 class LianjiaCommand extends Service {
 	
@@ -48,7 +49,7 @@ class LianjiaCommand extends Service {
 	public function __construct() {
 		parent::__construct();
 		$this->_buildUrl();
-		$this->_datetime = date('Y-m-d H:i:s', time());
+		$this->_datetime = date('Y-m-d H:i:00', time());
 		
 		return $this;
 	}
@@ -62,31 +63,37 @@ class LianjiaCommand extends Service {
 		for($index = 1; $index <= $this->_page_limit; $index++) {
 			foreach($this->_cities as $url => $name) {
 				$page                  = sprintf($this->_page_params, $index);
-				$this->_request_urls[] = sprintf($this->_url, $url, $page, $this->_other_limit);
+				$this->_request_urls[] = [
+					'url'  => sprintf($this->_url, $url, $page, $this->_other_limit),
+					'name' => $name,
+				];
 			}
 		}
 	}
 	
 	public function start() {
 		
-		foreach($this->_request_urls as $url) {
-			$html = $this->_downloadPage($url);
+		foreach($this->_request_urls as $url_info) {
+			$html = $this->_downloadPage($url_info['url']);
 			
 			$crawler = new Crawler($html);
 			
-			$crawler->filter('ul.sellListContent > li')->each(function(Crawler $node, $i) {
-				$this->_saveList([
+			$crawler->filter('ul.sellListContent > li')->each(function(Crawler $node, $i) use ($url_info) {
+				
+				$house_info = [
 					'url'        => $node->filter('a.img')->attr('href'),
+					'area'       => $url_info['name'],
 					'title'      => $node->filter('div.title')->text(),
 					'address'    => $node->filter('div.address')->text(),
 					'flood'      => $node->filter('div.flood')->text(),
 					'tag'        => $node->filter('div.tag')->text(),
 					'price_info' => $node->filter('div.priceInfo')->text(),
 					'price'      => (int)$node->filter('div.priceInfo')->text(),
-				]);
+				];
+				$this->_saveList($house_info);
+				
+				$this->log($house_info);
 			});
-			exit;
-			
 		}
 	}
 	
@@ -108,9 +115,13 @@ class LianjiaCommand extends Service {
 	
 	private function _saveList($data) {
 		
-		$data = array_merge([
-			'datetime' => $this->_datetime
-		], $data);
-		Yii::$app->db->createCommand()->insert('post_list_data', $data)->execute();
+		try {
+			$data = array_merge([
+				'datetime' => $this->_datetime
+			], $data);
+			Yii::$app->db->createCommand()->insert('post_list_data', $data)->execute();
+		} catch(Exception $e) {
+			$this->log($e->getMessage());
+		}
 	}
 }
