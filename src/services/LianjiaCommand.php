@@ -49,7 +49,7 @@ class LianjiaCommand extends Service {
 	public function __construct() {
 		parent::__construct();
 		$this->_buildUrl();
-		$this->_datetime = date('Y-m-d H:i:00', time());
+		$this->_datetime = date('Y-m-d H:00:00', time());
 		
 		return $this;
 	}
