@@ -24,12 +24,11 @@ e_warning() {
 
 e_header "准备全局参数"
 BINPATH=$(cd `dirname $0`; pwd)
-SOURCE_PATH="${BINPATH}/"
+SOURCE_PATH="${BINPATH}/web/"
 
-e_header "保存本地"
-git pull origin master
-git add .
-git commit -am "add upgrade"
-git push
+
+e_header "开始运行"
+
+php ${SOURCE_PATH}/cli.php task/start
 
 e_success "OK"
