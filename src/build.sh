@@ -26,9 +26,6 @@ e_header "准备全局参数"
 BINPATH=$(cd `dirname $0`; pwd)
 SOURCE_PATH="${BINPATH}/../"
 
-e_header "隐藏敏感数据"
-sed -ig "s/password='123456'/password=''/" .env
-
 e_header "保存本地"
 git pull origin master
 git add .
