@@ -2,6 +2,7 @@
 
 namespace app\services;
 
+use app\models\PostListData;
 use Yii;
 use app\library\Service;
 use Symfony\Component\DomCrawler\Crawler;
@@ -49,7 +50,7 @@ class LianjiaCommand extends Service {
 	public function __construct() {
 		parent::__construct();
 		$this->_buildUrl();
-		$this->_datetime = date('Y-m-d H:00:00', time());
+		$this->_datetime = date('Y-m-d 00:00:00', time());
 		
 		return $this;
 	}
@@ -81,6 +82,7 @@ class LianjiaCommand extends Service {
 			$crawler->filter('ul.sellListContent > li')->each(function(Crawler $node, $i) use ($url_info) {
 				
 				$house_info = [
+					'datetime'   => $this->_datetime,
 					'url'        => $node->filter('a.img')->attr('href'),
 					'area'       => $url_info['name'],
 					'title'      => $node->filter('div.title')->text(),
@@ -90,9 +92,10 @@ class LianjiaCommand extends Service {
 					'price_info' => $node->filter('div.priceInfo')->text(),
 					'price'      => (int)$node->filter('div.priceInfo')->text(),
 				];
-				$this->_saveList($house_info);
+				PostListData::buildInfo($house_info);
 				
 				$this->log($house_info);
+				exit;
 			});
 		}
 	}
@@ -111,17 +114,5 @@ class LianjiaCommand extends Service {
 		}
 		
 		return (string)$result;
-	}
-	
-	private function _saveList($data) {
-		
-		try {
-			$data = array_merge([
-				'datetime' => $this->_datetime
-			], $data);
-			Yii::$app->db->createCommand()->insert('post_list_data', $data)->execute();
-		} catch(Exception $e) {
-			$this->log($e->getMessage());
-		}
 	}
 }

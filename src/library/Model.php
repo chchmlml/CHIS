@@ -8,28 +8,12 @@
 
 namespace app\library;
 
-use \Yii;
-use \yii\base\Object;
-use yii\db\Query;
+use yii\db\ActiveRecord;
 
-class Model extends Object {
-
-    /**
-     * @var \yii\db\Connection
-     */
-    protected $db = null;
-
-    /**
-     * @var \yii\db\Query
-     */
-    protected $query = null;
-
-    public function __construct (array $config = []) {
-        parent::__construct($config);
-
-        $this->db = Yii::$app->db;
-        $this->query = new Query();
-    }
-
-
+class Model extends ActiveRecord {
+	
+	
+	public function __construct(array $config = []) {
+		parent::__construct($config);
+	}
 }

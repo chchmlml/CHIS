@@ -7,7 +7,7 @@
 #
 # Host: 127.0.0.1 (MySQL 5.6.26)
 # Database: CHIS
-# Generation Time: 2017-08-01 02:44:52 +0000
+# Generation Time: 2017-08-01 08:22:51 +0000
 # ************************************************************
 
 
@@ -37,7 +37,9 @@ CREATE TABLE `post_list_data` (
   `price_info` varchar(200) NOT NULL DEFAULT '',
   `price` int(4) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
-  UNIQUE KEY `dix` (`datetime`,`url`)
+  UNIQUE KEY `dix` (`datetime`,`url`),
+  KEY `area` (`area`),
+  KEY `idx_datetime` (`datetime`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='列表请求html';
 
 

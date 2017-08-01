@@ -70,4 +70,29 @@ class PostController extends Controller {
 		]);
 	}
 	
+	public function actionData() {
+		$cities = [
+			"东城",
+			"西城",
+			"朝阳",
+			"海淀",
+			"丰台",
+			"石景山",
+			"通州",
+			"昌平",
+			"大兴",
+			"亦庄开发区",
+			"顺义",
+			"房山",
+			"门头沟",
+			"平谷",
+			"怀柔",
+			"密云",
+			"延庆",
+		];
+		return $this->getView()->render('/post/data', [
+			'cities' => $cities,
+		]);
+	}
+	
 }

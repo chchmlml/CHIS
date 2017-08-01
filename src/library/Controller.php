@@ -23,4 +23,11 @@ class Controller extends \yii\web\Controller {
         ])->send();
         exit;
     }
+	
+	public function dataJson(array $data = array()) {
+		
+		header('Content-type: application/json;charset=UTF-8');
+		echo json_encode($data, JSON_UNESCAPED_UNICODE);
+		exit();
+	}
 }
