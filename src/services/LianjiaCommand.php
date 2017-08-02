@@ -81,21 +81,24 @@ class LianjiaCommand extends Service {
 			
 			$crawler->filter('ul.sellListContent > li')->each(function(Crawler $node, $i) use ($url_info) {
 				
-				$house_info = [
-					'datetime'   => $this->_datetime,
-					'url'        => $node->filter('a.img')->attr('href'),
-					'area'       => $url_info['name'],
-					'title'      => $node->filter('div.title')->text(),
-					'address'    => $node->filter('div.address')->text(),
-					'flood'      => $node->filter('div.flood')->text(),
-					'tag'        => $node->filter('div.tag')->text(),
-					'price_info' => $node->filter('div.priceInfo')->text(),
-					'price'      => (int)$node->filter('div.priceInfo')->text(),
-				];
-				PostListData::buildInfo($house_info);
+				try {
+					$house_info = [
+						'datetime'   => $this->_datetime,
+						'url'        => $node->filter('a.img')->attr('href'),
+						'area'       => $url_info['name'],
+						'title'      => $node->filter('div.title')->text(),
+						'address'    => $node->filter('div.address')->text(),
+						'flood'      => $node->filter('div.flood')->text(),
+						'tag'        => $node->filter('div.tag')->text(),
+						'price_info' => $node->filter('div.priceInfo')->text(),
+						'price'      => (int)$node->filter('div.priceInfo')->text(),
+					];
+					PostListData::buildInfo($house_info);
+				} catch(Exception $e) {
+					$this->log($e->getMessage());
+				}
 				
 				$this->log($house_info);
-				exit;
 			});
 		}
 	}

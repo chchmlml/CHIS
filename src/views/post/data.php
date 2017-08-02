@@ -26,6 +26,7 @@
 						<th data-options="field:'tag'" width="30">描述</th>
 						<th data-options="field:'price_info'" width="20">价格详情</th>
 						<th data-options="field:'price'" sortable="true" width="8">价格</th>
+						<th data-options="field:'url',formatter:formatter" width="8">查看</th>
 					</tr>
 					</thead>
 				</table>
@@ -58,6 +59,12 @@
             });
         })
 
+        function formatter(value,row,index){
+            if (row.url){
+                return "<a href='"+value+"' target='_blank'>查看</a>";
+            }
+        }
+        
         function myformatter(date){
             var y = date.getFullYear();
             var m = date.getMonth()+1;
